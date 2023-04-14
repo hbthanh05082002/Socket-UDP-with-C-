@@ -5,6 +5,7 @@ using namespace std;
 
 #pragma comment(lib, "ws2_32.lib")
 #define BUFFER_SIZE 1024
+#define IP_ADDRESS "127.0.0.1"
 // gcc -g cli.cpp -lstdc++ -lws2_32 -o cli.exe
 
 
@@ -88,7 +89,8 @@ int main()
     memset((char *)&server, 0, sizeof(server));
     server.sin_family = AF_INET;
     server.sin_port = htons(8888);
-    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server.sin_addr.s_addr = inet_addr(IP_ADDRESS);
+    // server.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     // send message to server
     while(true) {

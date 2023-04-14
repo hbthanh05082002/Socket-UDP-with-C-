@@ -118,7 +118,6 @@ void getListSinhVien() {
                 temp += tokens[i] + " ";
             }
             sv.setName(temp);
-            // cout << sv.toString() << endl;
             SVList.push_back(sv);
             tokens.clear();
         }
@@ -177,6 +176,7 @@ int main()
         tach_chuoi(receivedData);
 
         int clientChoice = atoi(newStringData[0].c_str());
+        string result;
         switch (clientChoice) {
             case 1: {
                 getListSinhVien();
@@ -189,34 +189,36 @@ int main()
                 }
                 SinhVien sv(newID, newStringData[1], atoi(newStringData[2].c_str()), atof(newStringData[3].c_str()));
                 writeToFile(sv.toString());
-                int send_len = sendto(sock, sv.toString().c_str(), sizeof(sv.toString()), 0, (struct sockaddr *)&client, slen);
-                if(send_len < 0) {
-                    cout << "Gui lai cho client khong thanh cong!" << endl;
-                }
+                //
+                result = sv.toString();
                 break;
             }
             case 2: {
                 cout << "Chuc nang 2" << endl;
                 getListSinhVien();
+                bool check = false;
                 for(int i = 0; i < SVList.size(); i++) {
                     if(SVList[i].getId() == newStringData[1]) {
                         SVList[i].setName(newStringData[2]);
                         SVList[i].setAge(atoi(newStringData[3].c_str()));
                         SVList[i].setGpa(atof(newStringData[4].c_str()));
-                        // 2 ID Ten Tuoi Diem
-                        int send_len = sendto(sock, SVList[i].toString().c_str(), sizeof(SVList[i].toString()), 0, (struct sockaddr *)&client, slen);
-                        if(send_len < 0) {
-                            cout << "Gui lai cho client khong thanh cong!" << endl;
-                        }
+                        // 2 ID Ten Tuoi Diem GPA
+                        check = true;
+                        result = SVList[i].toString();
                         break;
                     }
                 }
-                SVList.clear();
+                if(!check) result = "Unknown Sinh Vien!";
                 reWriteToFile();
+                SVList.clear();
                 break;
             }
         }
-        SVList.clear();
+        // Send back to client
+        int send_len = sendto(sock, result.c_str(), sizeof(result), 0, (struct sockaddr *)&client, slen);
+        if(send_len < 0) {
+            cout << "Gui lai cho client khong thanh cong!" << endl;
+        }
         cout << "Tra lai ket qua cho client!" << endl;
     }
 
